@@ -47,9 +47,7 @@ contract CounterStateChannel {
      * @param end - the value to conclude the counter at
      */
     #[aztec(private)]
-    fn init_counter(start: Field, end: Field) {
-        // get the msg sender as the owner
-        let owner = context.msg_sender();
+    fn init_counter(start: Field, end: Field, owner: Field) {
         // get the singleton from storage
         let counter_singleton =  storage.counters.at(owner);
         // // initialize a new singleton for the counter
@@ -93,9 +91,8 @@ contract CounterStateChannel {
      * @notice: DO NOT INCREMENT MORE THAN 64 TIMES (current call stack limit)
      */
     #[aztec(private)]
-    fn increment_multiple() {
+    fn increment_multiple(owner: Field) {
         // get the msg sender as the owner
-        let owner = context.msg_sender();
         // // get the singleton from storage
         let counter_singleton = storage.counters.at(owner);
         // get the counter note from storage
@@ -107,9 +104,10 @@ contract CounterStateChannel {
 
         // if the counter has not reached its end value, increment again
         if counter.value as u120 < counter.end as u120 {
-            context.call_private_function_no_args(
+            context.call_private_function(
                 context.this_address(),
-                compute_selector("increment_multiple()")
+                compute_selector("increment_multiple(Field)"),
+                [owner]
             );
         }
     }

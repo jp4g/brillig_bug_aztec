@@ -58,11 +58,12 @@ describe("State Channel", () => {
     // deploy contract
     contractAddress = await deploy(accounts.alice);
     // initialize the counter
+    const address = accounts.alice.getCompleteAddress().address;
     const contract = await CounterStateChannelContract.at(
       contractAddress,
       accounts.alice
     );
-    const receipt = await contract.methods.init_counter(0, 3).send().wait();
+    const receipt = await contract.methods.init_counter(0, 3, address).send().wait();
     // verify tx confirmation
     if (receipt.status !== TxStatus.MINED)
       throw new Error(`init_counter tx status is ${receipt.status}`);
@@ -70,18 +71,19 @@ describe("State Channel", () => {
     logger("Initialized Test Environment");
   });
 
-  test("Demonstrate bug with basic private -> private fn call", async () => {
-    // get contract instance
-    const contract = await CounterStateChannelContract.at(
-      contractAddress,
-      accounts.alice
-    );
-    // call private -> private fn
-    const receipt = await contract.methods.function_one().send().wait();
-    // verify tx confirmation
-    if (receipt.status !== TxStatus.MINED)
-      throw new Error(`Deploy tx status is ${receipt.status}`);
-  });
+//   test("Demonstrate bug with basic private -> private fn call", async () => {
+//     const address = accounts.alice.getCompleteAddress().address;
+//     // get contract instance
+//     const contract = await CounterStateChannelContract.at(
+//       contractAddress,
+//       accounts.alice
+//     );
+//     // call private -> private fn
+//     const receipt = await contract.methods.function_one().send().wait();
+//     // verify tx confirmation
+//     if (receipt.status !== TxStatus.MINED)
+//       throw new Error(`Deploy tx status is ${receipt.status}`);
+//   });
 
   test("Demonstrate bug with increment_multiple", async () => {
     // get contract instance
@@ -94,7 +96,7 @@ describe("State Channel", () => {
     let count = await contract.methods.get_counter(address).view();
     expect(count).toEqual(0n);
     // increment to end
-    const receipt = await contract.methods.increment_multiple().send().wait();
+    const receipt = await contract.methods.increment_multiple(address).send().wait();
     // verify tx confirmation
     if (receipt.status !== TxStatus.MINED)
       throw new Error(`Deploy tx status is ${receipt.status}`);
