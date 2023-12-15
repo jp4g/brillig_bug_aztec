@@ -5,8 +5,7 @@ Reproduce [Brillig Issue](https://github.com/AztecProtocol/aztec-packages/issues
 1. `git clone https://github.com/jp4g/brillig_bug_aztec.git && cd brillig_bug_aztec`
 2. `yarn`
 3. `yarn sandbox`
-OPEN NEW TERMINAL IN SAME DIRECTORY
-4. `yarn artifacts`
+4. OPEN NEW TERMINAL IN SAME DIRECTORY, then `yarn artifacts`
 
 ## Cases
 
