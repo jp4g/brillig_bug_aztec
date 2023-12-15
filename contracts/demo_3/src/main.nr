@@ -52,31 +52,12 @@ contract CounterStateChannel {
         let owner = context.msg_sender();
         // get the singleton from storage
         let counter_singleton =  storage.counters.at(owner);
-        // check to see if the counter has already been initialized
-        // unreachable since unconstrained :( how to check if initialized???
-        // assert(
-        //     counter_singleton.is_initialized(Option::some((owner))) == false,
-        //     "Counter has already been initialized for this account"
-        // );
         // // initialize a new singleton for the counter
         counter_singleton.initialize(
             &mut CounterNote::new(owner, start, end),
             Option::some(owner),
             true
         );
-    }
-
-    #[aztec(private)]
-    fn function_one() {
-        context.call_private_function_no_args(
-            context.this_address(),
-            compute_selector("function_two()")
-        );
-    }
-
-    #[aztec(private)]
-    fn function_two() {
-        
     }
 
     /**
@@ -107,30 +88,6 @@ contract CounterStateChannel {
         // @todo: publicly mark counter as complete if start == end
     }
 
-    #[aztec(private)]
-    fn increment_by(amount: Field) {
-        // get the msg sender as the owner
-        let owner = context.msg_sender();
-        // get the singleton from storage
-        let counter_singleton = storage.counters.at(owner);
-        // check that the counter can be incremented
-        let mut counter = counter_singleton.get_note(false);
-        assert(
-            counter.value as u120 < counter.end as u120,
-            "Counter has already been incremented to its end value"
-        );
-        // increment value in note and replace in storage
-        counter.value += amount;
-        counter_singleton.replace(&mut counter, false);
-        emit_encrypted_log(
-            &mut context,
-            context.this_address(),
-            counter.header.storage_slot,
-            get_public_key(context.msg_sender()),
-            counter.serialize()
-        );
-    }
-
     /**
      * Increment the counter recursively until it reaches the end value
      * @notice: DO NOT INCREMENT MORE THAN 64 TIMES (current call stack limit)
@@ -155,11 +112,6 @@ contract CounterStateChannel {
                 compute_selector("increment_multiple()")
             );
         }
-        // context.call_private_function(
-        //     context.this_address(),
-        //     compute_selector("increment_by(Field)"),
-        //     [1]
-        // );
     }
 
     unconstrained fn get_counter(owner: Field) -> Field {
